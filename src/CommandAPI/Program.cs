@@ -1,3 +1,6 @@
+using CommandAPI.Data;
+using CommandAPI.Data.Implement;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +9,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 //Add Controllers Service
 builder.Services.AddControllers();
+
+builder.Services.AddScoped<ICommandAPIRepo, MockCommandAPIRepo>();
 
 var app = builder.Build();
 
