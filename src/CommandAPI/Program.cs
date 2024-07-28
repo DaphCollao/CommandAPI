@@ -1,13 +1,21 @@
 using CommandAPI.Data;
 using CommandAPI.Data.Implement;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-//Add Controllers Service
+
+// Configurar DbContext
+builder.Services.AddDbContext<CommandContext>(opt =>
+    opt.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSqlConnection")));
+
+// Add Controllers Service
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<ICommandAPIRepo, MockCommandAPIRepo>();
@@ -22,13 +30,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-//Add UseRouting
+
+// Add UseRouting
 app.UseRouting();
 
-// app.MapGet("/", async context => {
-//     await context.Response.WriteAsync("Hello World");
-// });
-//Add UseEndpoint MapController
+// Add UseEndpoints MapController
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
