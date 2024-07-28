@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,8 +13,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Configurar DbContext
+var sqlBuilder = new NpgsqlConnectionStringBuilder();
+sqlBuilder.ConnectionString = builder.Configuration.GetConnectionString("PostgreSqlConnection");
+sqlBuilder.Username = builder.Configuration["UserID"];
+sqlBuilder.Password = builder.Configuration["Password"];
+
 builder.Services.AddDbContext<CommandContext>(opt =>
-    opt.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSqlConnection")));
+    opt.UseNpgsql(sqlBuilder.ConnectionString));
 
 // Add Controllers Service
 builder.Services.AddControllers();
