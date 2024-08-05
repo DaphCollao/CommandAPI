@@ -34,5 +34,12 @@ namespace CommandAPI.Controllers
                 return NotFound();
             return Ok(command);
         }
+
+        [HttpPost]
+        public ActionResult<string> CreateCommand(Command command)
+        {
+            return BadRequest("Command not created");
+            return Ok("Commmand created");
+        }
     }
 }
