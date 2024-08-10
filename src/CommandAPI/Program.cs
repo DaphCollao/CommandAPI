@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Serialization;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,7 +23,13 @@ builder.Services.AddDbContext<CommandContext>(opt =>
     opt.UseNpgsql(sqlBuilder.ConnectionString));
 
 // Add Controllers Service
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson(s => 
+    {
+        s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+    });
+
+// Add AutoMapper
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddScoped<ICommandAPIRepo, SqlCommandAPIRepo>();
 
