@@ -3,6 +3,7 @@ using AutoMapper;
 using CommandAPI.Data;
 using CommandAPI.Dtos;
 using CommandAPI.Models;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CommandAPI.Controllers
@@ -71,6 +72,41 @@ namespace CommandAPI.Controllers
             _mapper.Map(updateDto,commandModelFromRepo); //Map from CommandUpdateDto to Command Object
 
             _repo.UpdateCommand(commandModelFromRepo);
+            _repo.SaveChanges();
+
+            return NoContent();
+        }
+
+        [HttpPatch("{id}")]
+        public ActionResult PartialCommandUpdate(int id, JsonPatchDocument<CommandUpdateDto> patchDoc){
+            var commandModelFromRepo = _repo.GetCommandById(id);
+
+            if (commandModelFromRepo == null)
+                return NotFound();
+
+            var commandToPatch = _mapper.Map<CommandUpdateDto>(commandModelFromRepo); //Map from Command to CommandUpdateDto, create commandUpdateDto object so JsonPatchDocument so its apply to a specific object type, in this case ComandUpdateDto
+            patchDoc.ApplyTo(commandToPatch, ModelState); // Apply the JsonPatchDocument retrieve in request body to the CommandUpdateDto created last line
+
+            if (!TryValidateModel(commandToPatch))
+                return ValidationProblem(ModelState);
+            
+            _mapper.Map(commandToPatch, commandModelFromRepo); // In this step commandToPatch has been successfuly updated so its go back from CommandUpdateDto to Command
+
+            _repo.UpdateCommand(commandModelFromRepo);
+
+            _repo.SaveChanges();
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public ActionResult DeleteCommand(int id){
+            var commandModelFromRepo = _repo.GetCommandById(id);
+
+            if (commandModelFromRepo == null)
+                return NotFound();
+            
+            _repo.DeleteCommand(commandModelFromRepo);
             _repo.SaveChanges();
 
             return NoContent();
