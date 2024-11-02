@@ -6,7 +6,7 @@ namespace CommandAPI.Tests
 {
     public class CommandTests : IDisposable
     {
-        Command testCommand;
+        Command? testCommand;
 
         public CommandTests()
         {
