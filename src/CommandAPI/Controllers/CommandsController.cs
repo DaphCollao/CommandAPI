@@ -10,12 +10,14 @@ namespace CommandAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CommandsController : ControllerBase{
+    public class CommandsController : ControllerBase
+    {
 
         private readonly ICommandAPIRepo _repo;
         private readonly IMapper _mapper;
 
-        public CommandsController(ICommandAPIRepo repo, IMapper mapper){
+        public CommandsController(ICommandAPIRepo repo, IMapper mapper)
+        {
             _repo = repo;
             _mapper = mapper;
         }
@@ -30,7 +32,7 @@ namespace CommandAPI.Controllers
         {
             var commandItems = _repo.GetAllCommands();
 
-            return Ok(_mapper.Map<IEnumerable<Command>>(commandItems).OrderBy(o => o.Id));
+            return Ok(_mapper.Map<IEnumerable<CommandReadDto>>(commandItems));
         }
 
         [HttpGet("{id}", Name = "GetCommandById")]
@@ -52,8 +54,8 @@ namespace CommandAPI.Controllers
 
             var commandReadDto = _mapper.Map<CommandReadDto>(commandModel); //Se mapea de Command a CommandReadDto 
 
-            return CreatedAtRoute(nameof(GetCommandById), new {Id = commandReadDto.Id}, commandReadDto); //Se crea un recurso, devuelve una respuesta 201 y proporciona la URL donde se puede acceder al nuevo recurso
-            
+            return CreatedAtRoute(nameof(GetCommandById), new { Id = commandReadDto.Id }, commandReadDto); //Se crea un recurso, devuelve una respuesta 201 y proporciona la URL donde se puede acceder al nuevo recurso
+
             //Explicacion del Return
             //CreatedAtRoute indica que el recurso ha sido creado y proporciona la ubicación del nuevo recurso.
             //nameof(GetCommandById) especifica el nombre de la ruta que se usará para obtener el recurso recién creado (en este caso, un método llamado GetCommandById).
@@ -66,10 +68,10 @@ namespace CommandAPI.Controllers
         {
             var commandModelFromRepo = _repo.GetCommandById(id); //Get Command Object
 
-            if (commandModelFromRepo == null) 
+            if (commandModelFromRepo == null)
                 return NotFound();
 
-            _mapper.Map(updateDto,commandModelFromRepo); //Map from CommandUpdateDto to Command Object
+            _mapper.Map(updateDto, commandModelFromRepo); //Map from CommandUpdateDto to Command Object
 
             _repo.UpdateCommand(commandModelFromRepo);
             _repo.SaveChanges();
@@ -78,7 +80,8 @@ namespace CommandAPI.Controllers
         }
 
         [HttpPatch("{id}")]
-        public ActionResult PartialCommandUpdate(int id, JsonPatchDocument<CommandUpdateDto> patchDoc){
+        public ActionResult PartialCommandUpdate(int id, JsonPatchDocument<CommandUpdateDto> patchDoc)
+        {
             var commandModelFromRepo = _repo.GetCommandById(id);
 
             if (commandModelFromRepo == null)
@@ -89,7 +92,7 @@ namespace CommandAPI.Controllers
 
             if (!TryValidateModel(commandToPatch))
                 return ValidationProblem(ModelState);
-            
+
             _mapper.Map(commandToPatch, commandModelFromRepo); // In this step commandToPatch has been successfuly updated so its go back from CommandUpdateDto to Command
 
             _repo.UpdateCommand(commandModelFromRepo);
@@ -100,12 +103,13 @@ namespace CommandAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public ActionResult DeleteCommand(int id){
+        public ActionResult DeleteCommand(int id)
+        {
             var commandModelFromRepo = _repo.GetCommandById(id);
 
             if (commandModelFromRepo == null)
                 return NotFound();
-            
+
             _repo.DeleteCommand(commandModelFromRepo);
             _repo.SaveChanges();
 
