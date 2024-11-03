@@ -64,7 +64,7 @@ namespace CommandAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult<CommandReadDto> UpdateCommand(int id, [FromBody] CommandUpdateDto updateDto)
+        public ActionResult UpdateCommand(int id, [FromBody] CommandUpdateDto updateDto)
         {
             var commandModelFromRepo = _repo.GetCommandById(id); //Get Command Object
 

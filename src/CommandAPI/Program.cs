@@ -23,7 +23,7 @@ builder.Services.AddDbContext<CommandContext>(opt =>
     opt.UseNpgsql(sqlBuilder.ConnectionString));
 
 // Add Controllers Service
-builder.Services.AddControllers().AddNewtonsoftJson(s => 
+builder.Services.AddControllers().AddNewtonsoftJson(s =>
     {
         s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
     });
@@ -50,7 +50,7 @@ app.UseRouting();
 // Add UseEndpoints MapController
 app.UseEndpoints(endpoints =>
 {
-    endpoints.MapControllers();
+    _ = endpoints.MapControllers();
 });
 
 app.Run();
